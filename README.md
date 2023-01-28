@@ -109,7 +109,7 @@ Disposes the current session from the registry so the token is no longer valid.
 
 We link the session with their authenticatable id to be able to grouping them later as active sessions.
 
-## authenticate middleware
+## authenticateRequest middleware
 
 Use this for a simple request rejection if the session was not authenticated.If not authenticated the middleware ends the response with unauthorized status.
 
