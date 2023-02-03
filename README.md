@@ -14,7 +14,8 @@ npm install @universal-packages/express-session
 npm install express
 ```
 
-## session middleware
+## Middleware
+#### **`session([options])`**
 
 Initialize a Session object
 
@@ -31,7 +32,7 @@ const app = express()
 app.use(session({ engine }))
 ```
 
-### Options
+#### Options
 
 - **`cookieName`** `String` `default: "session"`
   Name of the cookie to fetch for the session token.
@@ -44,6 +45,34 @@ app.use(session({ engine }))
 
 - **`trackSessionAccess`** `Boolean`
   Update registry every time a request is made to track ip and last access changes.
+
+#### **`authenticateRequest`**
+
+Use this for a simple request rejection if the session was not authenticated.If not authenticated the middleware ends the response with unauthorized status.
+
+```js
+import { authenticateRequest } from '@universal-packages/express-session'
+
+app.get('/private', authenticateRequest, async (request, response) => {
+  response.end()
+})
+```
+
+### Create your own
+
+Authenticating request is very simple you can even add your own logic like setting a current user to use later.
+
+```js
+export async function authenticateRequest(request, response, next) {
+  if (request.session.authenticated) {
+    request.currentUser = await User.find(request.session.authenticatableID)
+
+    next()
+  } else {
+    response.status(401).end()
+  }
+}
+```
 
 ### Request authentication
 
@@ -97,47 +126,20 @@ User agent in which the session was created at log in.
 
 ### Instance methods
 
-#### logIn `async (authenticatableID: String)`
+#### **`logIn(authenticatableID: String)`** `Async`
 
 Creates a new session using the authenticatable id and sets the cookie `session` as well as the `Authorization` response header to return to the user when ending the response.
 
-#### logOut `async ()`
+#### **`logOut()`** `Async`
 
 Disposes the current session from the registry so the token is no longer valid.
 
-#### activeSessions `async ()`
+#### **`activeSessions()`** `Async`
 
 We link the session with their authenticatable id to be able to grouping them later as active sessions.
 
-## authenticateRequest middleware
-
-Use this for a simple request rejection if the session was not authenticated.If not authenticated the middleware ends the response with unauthorized status.
-
-```js
-import { authenticateRequest } from '@universal-packages/express-session'
-
-app.get('/private', authenticateRequest, async (request, response) => {
-  response.end()
-})
-```
-
-### Create your own
-
-Authenticating request is very simple you can even add your own logic like setting a current user to use later.
-
-```js
-export async function authenticateRequest(request, response, next) {
-  if (request.session.authenticated) {
-    request.currentUser = await User.find(request.session.authenticatableID)
-
-    next()
-  } else {
-    response.status(401).end()
-  }
-}
-```
-
-## injectSession `(request: Request, response: Response, options?: ExpressSessionOptions)`
+## Global methods
+#### **`injectSession(request: Request, response: Response, options?: ExpressSessionOptions)`**
 
 To only inject the session object into the request and don't behave as middle ware use this method. In case you are doing some custom middleware.
 
