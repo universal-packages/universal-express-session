@@ -1,8 +1,7 @@
-import { EngineInterface } from '@universal-packages/token-registry'
+import { RegistryOptions } from '@universal-packages/token-registry'
 
-export interface ExpressSessionOptions {
+export interface ExpressSessionOptions extends RegistryOptions {
   cookieName?: string
-  engine?: EngineInterface
   registryId?: string
   trackSessionAccess?: boolean
 }

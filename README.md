@@ -34,11 +34,12 @@ app.use(session({ engine }))
 
 #### Options
 
+`Session` takes the same options as [Token Registry](https://github.com/universal-packages/universal-token-registry#options)
+
+Additionally: 
+
 - **`cookieName`** `String` `default: "session"`
   Name of the cookie to fetch for the session token.
-
-- **`engine`** `RegistryEngine`
-  Registry Engine to use to store sessions.
 
 - **`registryId`** `String`
   String to use to add randomness to the token generation.

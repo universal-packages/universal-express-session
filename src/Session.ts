@@ -2,6 +2,7 @@ import { MemoryEngine, Registry } from '@universal-packages/token-registry'
 import { Request, Response } from 'express'
 import { ExpressSessionOptions, SessionRegistrySubject } from './types'
 
+// All sessions share this memory engine
 const MEMORY_ENGINE = new MemoryEngine()
 
 export default class Session {
@@ -21,8 +22,9 @@ export default class Session {
 
   public constructor(request: Request, response: Response, options?: ExpressSessionOptions) {
     this.options = { engine: MEMORY_ENGINE, cookieName: 'session', ...options }
+    const engine = this.options.engine === 'memory' ? MEMORY_ENGINE : this.options.engine
 
-    this.registry = new Registry({ engine: this.options.engine, seed: this.options.registryId })
+    this.registry = new Registry({ engine: engine, seed: this.options.registryId || this.options.seed })
     this.request = request
     this.response = response
   }
