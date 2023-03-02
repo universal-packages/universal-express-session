@@ -24,12 +24,14 @@ export default class Session {
     this.options = { engine: MEMORY_ENGINE, cookieName: 'session', ...options }
     const engine = this.options.engine === 'memory' ? MEMORY_ENGINE : this.options.engine
 
-    this.registry = new Registry({ engine: engine, seed: this.options.registryId || this.options.seed })
+    this.registry = new Registry({ engine: engine, engineOptions: this.options.engineOptions, seed: this.options.registryId || this.options.seed })
     this.request = request
     this.response = response
   }
 
   public async initialize(): Promise<void> {
+    await this.registry.initialize()
+
     const token = this.getTokenFromHeader() || this.getTokenFromCookies()
 
     if (token) {
