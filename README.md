@@ -15,6 +15,7 @@ npm install express
 ```
 
 ## Middleware
+
 #### **`session([options])`**
 
 Initialize a Session object
@@ -36,7 +37,7 @@ app.use(session({ engine }))
 
 `Session` takes the same options as [Token Registry](https://github.com/universal-packages/universal-token-registry#options)
 
-Additionally: 
+Additionally:
 
 - **`cookieName`** `String` `default: "session"`
   Name of the cookie to fetch for the session token.
@@ -97,6 +98,10 @@ app.get('/', async (request, response) => {
 
 True whe a request was authenticated with a token.
 
+#### id `String`
+
+A unique id for the session aside from the token.
+
 #### authenticatableId `String`
 
 The same id used to create the session at log in.
@@ -131,15 +136,16 @@ User agent in which the session was created at log in.
 
 Creates a new session using the authenticatable id and sets the cookie `session` as well as the `Authorization` response header to return to the user when ending the response.
 
-#### **`logOut()`** `Async`
+#### **`logOut(token? string)`** `Async`
 
-Disposes the current session from the registry so the token is no longer valid.
+Disposes the current session from the registry so the token is no longer valid, or if a token is provided it will dispose that session instead.
 
 #### **`activeSessions()`** `Async`
 
 We link the session with their authenticatable id to be able to grouping them later as active sessions.
 
 ## Global methods
+
 #### **`injectSession(request: Request, response: Response, options?: ExpressSessionOptions)`**
 
 To only inject the session object into the request and don't behave as middle ware use this method. In case you are doing some custom middleware.
