@@ -7,6 +7,7 @@ export interface ExpressSessionOptions extends RegistryOptions {
 }
 
 export interface SessionRegistrySubject {
+  id: string
   authenticatableId: string
   firstAccessed: number
   lastAccessed: number

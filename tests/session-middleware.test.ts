@@ -132,11 +132,12 @@ describe('session-middleware', (): void => {
     await fetch(`http://localhost:${port}/login`, { method: 'post' })
     await fetch(`http://localhost:${port}/login`, { method: 'post' })
 
-    expect(await lastSession.activeSessions()).toEqual([
+    expect(Object.values(await lastSession.activeSessions())).toEqual([
       {
         authenticatableId: '8',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
+        id: expect.any(String),
         lastAccessed: expect.any(Number),
         lastIp: expect.any(String),
         userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)'
@@ -145,6 +146,7 @@ describe('session-middleware', (): void => {
         authenticatableId: '8',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
+        id: expect.any(String),
         lastAccessed: expect.any(Number),
         lastIp: expect.any(String),
         userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)'
@@ -153,8 +155,9 @@ describe('session-middleware', (): void => {
 
     await fetch(`http://localhost:${port}/login-b`, { method: 'post' })
 
-    expect(await lastSession.activeSessions()).toEqual([
+    expect(Object.values(await lastSession.activeSessions())).toEqual([
       {
+        id: expect.any(String),
         authenticatableId: '2',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),

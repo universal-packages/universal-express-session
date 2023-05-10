@@ -1,3 +1,4 @@
+import { generateToken } from '@universal-packages/crypto-utils'
 import { MemoryEngine, Registry } from '@universal-packages/token-registry'
 import { Request, Response } from 'express'
 import { ExpressSessionOptions, SessionRegistrySubject } from './types'
@@ -6,6 +7,7 @@ import { ExpressSessionOptions, SessionRegistrySubject } from './types'
 const MEMORY_ENGINE = new MemoryEngine()
 
 export default class Session {
+  public id: string = null
   public authenticated: boolean = false
   public authenticatableId: string = null
   public token: string = null
@@ -38,6 +40,7 @@ export default class Session {
       const subject = await this.registry.retrieve(token)
 
       if (subject) {
+        this.id = subject.id
         this.token = token
         this.authenticated = true
         this.authenticatableId = subject.authenticatableId
@@ -48,17 +51,24 @@ export default class Session {
         this.userAgent = subject.userAgent
 
         if (this.options.trackSessionAccess) {
-          await this.registry.update(token, {
-            ...subject,
-            lastAccessed: this.lastAccessed.getTime(),
-            lastIp: this.lastIp
-          })
+          const category = `auth-${subject.authenticatableId}`
+
+          await this.registry.register(
+            token,
+            {
+              ...subject,
+              lastAccessed: this.lastAccessed.getTime(),
+              lastIp: this.lastIp
+            },
+            category
+          )
         }
       }
     }
   }
 
   public async logIn(authenticatableId: string | number | bigint): Promise<void> {
+    this.id = generateToken({ seed: String(authenticatableId) })
     this.authenticated = true
     this.authenticatableId = String(authenticatableId)
     this.firstAccessed = new Date()
@@ -71,6 +81,7 @@ export default class Session {
 
     this.token = await this.registry.register(
       {
+        id: this.id,
         authenticatableId: this.authenticatableId,
         firstAccessed: this.firstAccessed.getTime(),
         lastAccessed: this.lastAccessed.getTime(),
@@ -85,28 +96,31 @@ export default class Session {
     this.response.cookie(this.options.cookieName, this.token)
   }
 
-  public async logOut(): Promise<void> {
+  public async logOut(token?: string): Promise<void> {
     if (this.authenticated) {
-      await this.registry.dispose(this.token)
+      if (token) {
+        await this.registry.dispose(token)
+      } else {
+        await this.registry.dispose(this.token)
 
-      this.authenticated = false
-      this.token = null
-      this.authenticatableId = null
-      this.firstAccessed = null
-      this.lastAccessed = null
-      this.firstIp = null
-      this.lastIp = null
-      this.userAgent = null
+        this.id = null
+        this.authenticated = false
+        this.token = null
+        this.authenticatableId = null
+        this.firstAccessed = null
+        this.lastAccessed = null
+        this.firstIp = null
+        this.lastIp = null
+        this.userAgent = null
+      }
     }
   }
 
-  public async activeSessions(): Promise<SessionRegistrySubject[]> {
+  public async activeSessions(): Promise<Record<string, SessionRegistrySubject>> {
     if (this.authenticated) {
       const category = `auth-${this.authenticatableId}`
-      const group = await this.registry.groupBy(category)
-      const registrySubjects = Object.values(group)
 
-      return registrySubjects
+      return await this.registry.retrieveAll(category)
     }
   }
 
