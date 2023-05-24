@@ -14,6 +14,7 @@ export interface SessionRegistrySubject {
   firstIp: string
   lastIp: string
   userAgent: string
+  deviceId: string
 }
 
 declare global {

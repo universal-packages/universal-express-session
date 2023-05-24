@@ -99,7 +99,7 @@ describe('session-middleware', (): void => {
     expect(response.status).toEqual(401)
   })
 
-  it('keeps track of all active sessions', async (): Promise<void> => {
+  it('keeps track of all active sessions and it device id', async (): Promise<void> => {
     const app = express()
     app.use(cookieParser())
     app.use(session())
@@ -140,7 +140,8 @@ describe('session-middleware', (): void => {
         id: expect.any(String),
         lastAccessed: expect.any(Number),
         lastIp: expect.any(String),
-        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)'
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: null
       },
       {
         authenticatableId: '8',
@@ -149,7 +150,8 @@ describe('session-middleware', (): void => {
         id: expect.any(String),
         lastAccessed: expect.any(Number),
         lastIp: expect.any(String),
-        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)'
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: null
       }
     ])
 
@@ -163,7 +165,23 @@ describe('session-middleware', (): void => {
         firstIp: expect.any(String),
         lastAccessed: expect.any(Number),
         lastIp: expect.any(String),
-        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)'
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: null
+      }
+    ])
+
+    lastSession.updateDeviceId('test-device-id')
+
+    expect(Object.values(await lastSession.activeSessions())).toEqual([
+      {
+        id: expect.any(String),
+        authenticatableId: '2',
+        firstAccessed: expect.any(Number),
+        firstIp: expect.any(String),
+        lastAccessed: expect.any(Number),
+        lastIp: expect.any(String),
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: 'test-device-id'
       }
     ])
   })

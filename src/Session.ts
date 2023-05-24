@@ -16,6 +16,7 @@ export default class Session {
   public firstIp: string = null
   public lastIp: string = null
   public userAgent: string = null
+  public deviceId: string = null
 
   private readonly registry: Registry<SessionRegistrySubject>
   private readonly request: Request
@@ -49,6 +50,7 @@ export default class Session {
         this.firstIp = subject.firstIp
         this.lastIp = this.request.ip
         this.userAgent = subject.userAgent
+        this.deviceId = subject.deviceId
 
         if (this.options.trackSessionAccess) {
           const category = `auth-${subject.authenticatableId}`
@@ -87,7 +89,8 @@ export default class Session {
         lastAccessed: this.lastAccessed.getTime(),
         firstIp: this.firstIp,
         lastIp: this.lastIp,
-        userAgent: this.userAgent
+        userAgent: this.userAgent,
+        deviceId: this.deviceId
       },
       category
     )
@@ -121,6 +124,29 @@ export default class Session {
       const category = `auth-${this.authenticatableId}`
 
       return await this.registry.retrieveAll(category)
+    }
+  }
+
+  public async updateDeviceId(deviceId: string): Promise<void> {
+    if (this.authenticated) {
+      this.deviceId = deviceId
+
+      const category = `auth-${this.authenticatableId}`
+
+      await this.registry.register(
+        this.token,
+        {
+          id: this.id,
+          authenticatableId: this.authenticatableId,
+          firstAccessed: this.firstAccessed.getTime(),
+          lastAccessed: this.lastAccessed.getTime(),
+          firstIp: this.firstIp,
+          lastIp: this.lastIp,
+          userAgent: this.userAgent,
+          deviceId: this.deviceId
+        },
+        category
+      )
     }
   }
 
