@@ -1,4 +1,5 @@
 import { NextFunction, Request, RequestHandler, Response } from 'express'
+
 import Session from './Session'
 import { ExpressSessionOptions } from './types'
 

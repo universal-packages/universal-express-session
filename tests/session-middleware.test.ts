@@ -3,9 +3,10 @@ import express, { Express, Request, Response } from 'express'
 import { Server } from 'http'
 import fetch from 'node-fetch'
 import { escape } from 'querystring'
+
 import { session } from '../src'
-import { authenticateRequest } from '../src/authenticate-middleware'
 import Session from '../src/Session'
+import { authenticateRequest } from '../src/authenticate-middleware'
 
 const port = 4000 + Number(process.env['JEST_WORKER_ID'])
 let server: Server

@@ -1,6 +1,7 @@
 import { generateToken } from '@universal-packages/crypto-utils'
 import { MemoryEngine, Registry } from '@universal-packages/token-registry'
 import { Request, Response } from 'express'
+
 import { ExpressSessionOptions, SessionRegistrySubject } from './types'
 
 // All sessions share this memory engine
