@@ -1,6 +1,6 @@
 {
   "name": "@universal-packages/express-session",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Express session manager.",
   "author": "David De Anda <david@universal-packages.com> (https://github.com/universal-packages)",
   "license": "MIT",
