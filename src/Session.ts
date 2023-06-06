@@ -1,11 +1,11 @@
 import { generateToken } from '@universal-packages/crypto-utils'
-import { MemoryEngine, Registry } from '@universal-packages/token-registry'
+import { MemoryEngine, Registry, RegistryOptions } from '@universal-packages/token-registry'
 import { Request, Response } from 'express'
 
 import { ExpressSessionOptions, SessionRegistrySubject } from './types'
 
 // All sessions share this memory engine
-const MEMORY_ENGINE = new MemoryEngine()
+export const MEMORY_ENGINE = new MemoryEngine()
 
 export default class Session {
   public id: string = null
@@ -24,13 +24,22 @@ export default class Session {
   private readonly response: Response
   private readonly options: ExpressSessionOptions
 
-  public constructor(request: Request, response: Response, options?: ExpressSessionOptions) {
+  public constructor(request: Request, response: Response, options?: RegistryOptions) {
     this.options = { engine: MEMORY_ENGINE, cookieName: 'session', ...options }
     const engine = this.options.engine === 'memory' ? MEMORY_ENGINE : this.options.engine
 
     this.registry = new Registry({ engine: engine, engineOptions: this.options.engineOptions, seed: this.options.registryId || this.options.seed })
     this.request = request
     this.response = response
+  }
+
+  public static async activeSessions(authenticatableId: string | number | bigint, options?: ExpressSessionOptions): Promise<Record<string, SessionRegistrySubject>> {
+    const finalOptions = { engine: MEMORY_ENGINE, cookieName: 'session', ...options }
+    const engine = finalOptions.engine === 'memory' ? MEMORY_ENGINE : finalOptions.engine
+    const registry = new Registry({ engine: engine, engineOptions: finalOptions.engineOptions, seed: finalOptions.registryId || finalOptions.seed })
+    const category = `auth-${authenticatableId}`
+
+    return await registry.retrieveAll(category)
   }
 
   public async initialize(): Promise<void> {

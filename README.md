@@ -142,7 +142,18 @@ Disposes the current session from the registry so the token is no longer valid, 
 
 #### **`activeSessions()`** `Async`
 
-We link the session with their authenticatable id to be able to grouping them later as active sessions.
+Returns all the active sessions for the current session authenticatable.
+
+### Static methods
+
+#### **`activeSessions(authenticatableId: String, [options: Object])`** `Async`
+
+Returns all the active sessions for the authenticatable id.
+
+- **`authenticatableId`** `String`
+  The id of the authenticatable to get the active sessions from.
+- **`options`** `Object`
+  Same options as [Token Registry](https://github.com/universal-packages/universal-token-registry#options)
 
 ## Global methods
 

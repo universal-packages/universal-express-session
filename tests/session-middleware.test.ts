@@ -100,7 +100,7 @@ describe('session-middleware', (): void => {
     expect(response.status).toEqual(401)
   })
 
-  it('keeps track of all active sessions and it device id', async (): Promise<void> => {
+  it('keeps track of all active sessions and the device id', async (): Promise<void> => {
     const app = express()
     app.use(cookieParser())
     app.use(session())
@@ -156,6 +156,29 @@ describe('session-middleware', (): void => {
       }
     ])
 
+    expect(Object.values(await Session.activeSessions(8))).toEqual([
+      {
+        authenticatableId: '8',
+        firstAccessed: expect.any(Number),
+        firstIp: expect.any(String),
+        id: expect.any(String),
+        lastAccessed: expect.any(Number),
+        lastIp: expect.any(String),
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: null
+      },
+      {
+        authenticatableId: '8',
+        firstAccessed: expect.any(Number),
+        firstIp: expect.any(String),
+        id: expect.any(String),
+        lastAccessed: expect.any(Number),
+        lastIp: expect.any(String),
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: null
+      }
+    ])
+
     await fetch(`http://localhost:${port}/login-b`, { method: 'post' })
 
     expect(Object.values(await lastSession.activeSessions())).toEqual([
@@ -171,9 +194,35 @@ describe('session-middleware', (): void => {
       }
     ])
 
+    expect(Object.values(await Session.activeSessions(2))).toEqual([
+      {
+        id: expect.any(String),
+        authenticatableId: '2',
+        firstAccessed: expect.any(Number),
+        firstIp: expect.any(String),
+        lastAccessed: expect.any(Number),
+        lastIp: expect.any(String),
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: null
+      }
+    ])
+
     lastSession.updateDeviceId('test-device-id')
 
     expect(Object.values(await lastSession.activeSessions())).toEqual([
+      {
+        id: expect.any(String),
+        authenticatableId: '2',
+        firstAccessed: expect.any(Number),
+        firstIp: expect.any(String),
+        lastAccessed: expect.any(Number),
+        lastIp: expect.any(String),
+        userAgent: 'node-fetch/1.0 (+https://github.com/bitinn/node-fetch)',
+        deviceId: 'test-device-id'
+      }
+    ])
+
+    expect(Object.values(await Session.activeSessions(2))).toEqual([
       {
         id: expect.any(String),
         authenticatableId: '2',
