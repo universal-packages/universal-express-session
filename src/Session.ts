@@ -42,8 +42,8 @@ export default class Session {
     return await registry.retrieveAll(category)
   }
 
-  public async initialize(): Promise<void> {
-    await this.registry.initialize()
+  public async prepare(): Promise<void> {
+    await this.registry.prepare()
 
     const token = this.getTokenFromHeader() || this.getTokenFromCookies()
 

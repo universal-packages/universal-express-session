@@ -14,5 +14,5 @@ export function session(options?: ExpressSessionOptions): RequestHandler {
 export async function injectSession(request: Request, response: Response, options?: ExpressSessionOptions): Promise<void> {
   request.session = new Session(request, response, options)
 
-  await request.session.initialize()
+  await request.session.prepare()
 }
