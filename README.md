@@ -176,6 +176,12 @@ app.use(async (request, response, next) => {
 
 ## Typescript
 
+In order for typescript to see the session prop in the `request` type you need to reference the types somewhere in your project, normally `./src/globals.ts`.
+
+```ts
+/// <reference types="@universal-packages/express-session" />
+```
+
 This library is developed in TypeScript and shipped fully typed.
 
 ## Contributing
