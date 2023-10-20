@@ -1,7 +1,6 @@
 import cookieParser from 'cookie-parser'
 import express, { Express, Request, Response } from 'express'
 import { Server } from 'http'
-import fetch from 'node-fetch'
 import { escape } from 'querystring'
 
 import { session } from '../src'
@@ -58,46 +57,47 @@ describe('session-middleware', (): void => {
 
     await startServer(app)
 
-    let response = await fetch(`http://localhost:${port}/`)
+    await fGet()
 
     expect(lastSession.authenticated).toBeFalsy()
-    expect(response.status).toEqual(200)
+    expect(fResponse).toHaveReturnedWithStatus('OK')
 
-    response = await fetch(`http://localhost:${port}/private`)
+    await fGet('/private')
 
-    expect(response.status).toEqual(401)
+    expect(fResponse).toHaveReturnedWithStatus('UNAUTHORIZED')
 
-    response = await fetch(`http://localhost:${port}/login`, { method: 'post' })
+    await fPost('/login')
+
     const token = lastSession.token
 
     expect(lastSession.authenticated).toBeTruthy()
     expect(lastSession.authenticatableId).toEqual('8')
-    expect(response.status).toEqual(200)
-    expect(response.headers.get('authorization')).toEqual(`bearer ${token}`)
-    expect(response.headers.get('set-cookie')).toEqual(`session=${escape(token)}; Path=/`)
+    expect(fResponse).toHaveReturnedWithStatus('OK')
+    expect(fResponse.headers.get('authorization')).toEqual(`bearer ${token}`)
+    expect(fResponse.headers.get('set-cookie')).toEqual(`session=${escape(token)}; Path=/`)
 
-    response = await fetch(`http://localhost:${port}/private`, { headers: { AUTHORIZATION: `bearer ${token}` } })
+    fAuthorization(`bearer ${token}`)
+    await fGet('/private')
+    expect(fResponse).toHaveReturnedWithStatus('OK')
 
-    expect(response.status).toEqual(200)
+    fHeaders({ cookie: `session=${token}` })
+    await fGet('/private')
+    expect(fResponse).toHaveReturnedWithStatus('OK')
 
-    response = await fetch(`http://localhost:${port}/private`, { headers: { cookie: `session=${token}` } })
-
-    expect(response.status).toEqual(200)
-
-    response = await fetch(`http://localhost:${port}/logout`, { method: 'post', headers: { AUTHORIZATION: `bearer ${token}` } })
-
+    fAuthorization(`bearer ${token}`)
+    await fPost('/logout')
     expect(lastSession.authenticated).toBeFalsy()
-    expect(response.status).toEqual(200)
+    expect(fResponse).toHaveReturnedWithStatus('OK')
 
-    response = await fetch(`http://localhost:${port}/`)
-
+    fAuthorization(undefined)
+    await fGet()
     expect(lastSession.authenticated).toBeFalsy()
-    expect(response.status).toEqual(200)
+    expect(fResponse).toHaveReturnedWithStatus('OK')
 
-    response = await fetch(`http://localhost:${port}/private`, { headers: { AUTHORIZATION: `bearer ${token}` } })
-
+    fAuthorization(`bearer ${token}`)
+    await fGet('/private')
     expect(lastSession.authenticated).toBeFalsy()
-    expect(response.status).toEqual(401)
+    expect(fResponse).toHaveReturnedWithStatus('UNAUTHORIZED')
   })
 
   it('keeps track of all active sessions and the device id', async (): Promise<void> => {
@@ -130,8 +130,8 @@ describe('session-middleware', (): void => {
 
     await startServer(app)
 
-    await fetch(`http://localhost:${port}/login`, { method: 'post' })
-    await fetch(`http://localhost:${port}/login`, { method: 'post' })
+    await fPost('/login')
+    await fPost('/login')
 
     expect(Object.values(await lastSession.activeSessions())).toEqual([
       {
@@ -179,7 +179,7 @@ describe('session-middleware', (): void => {
       }
     ])
 
-    await fetch(`http://localhost:${port}/login-b`, { method: 'post' })
+    await fPost('/login-b')
 
     expect(Object.values(await lastSession.activeSessions())).toEqual([
       {

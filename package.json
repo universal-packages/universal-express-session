@@ -28,10 +28,9 @@
     "@types/express": "^4.17.14",
     "@types/jest": "^29.5.5",
     "@types/node": "^18.11.9",
-    "@types/node-fetch": "^2.6.2",
+    "@universal-packages/fetch-jest": "^1.1.2",
     "@universal-packages/maintenance": "^1.2.2",
     "jest": "^29.7.0",
-    "node-fetch": "^2.6.7",
     "prettier": "^3.0.3",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
@@ -42,6 +41,7 @@
       "src/**/*.ts"
     ],
     "setupFilesAfterEnv": [
+      "@universal-packages/fetch-jest",
       "<rootDir>/tests/setup.ts"
     ]
   },
