@@ -16,7 +16,7 @@
     "update-dependents": "umaintenance update-dependents"
   },
   "dependencies": {
-    "@universal-packages/token-registry": "^1.7.2"
+    "@universal-packages/token-registry": "^1.7.3"
   },
   "peerDependencies": {
     "cookie-parser": "^1.4.6",
