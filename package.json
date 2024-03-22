@@ -16,7 +16,7 @@
     "update-universal-dependencies": "umaintenance update-universal-dependencies"
   },
   "dependencies": {
-    "@universal-packages/token-registry": "^1.7.6"
+    "@universal-packages/token-registry": "^1.7.7"
   },
   "peerDependencies": {
     "cookie-parser": "^1.4.6",
