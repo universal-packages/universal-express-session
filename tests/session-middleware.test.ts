@@ -71,7 +71,7 @@ describe('session-middleware', (): void => {
     const token = lastSession.token
 
     expect(lastSession.authenticated).toBeTruthy()
-    expect(lastSession.authenticatableId).toEqual('8')
+    expect(lastSession.userId).toEqual('8')
     expect(fResponse).toHaveReturnedWithStatus('OK')
     expect(fResponse.headers.get('authorization')).toEqual(`bearer ${token}`)
     expect(fResponse.headers.get('set-cookie')).toEqual(`session=${escape(token)}; Path=/`)
@@ -135,7 +135,7 @@ describe('session-middleware', (): void => {
 
     expect(Object.values(await lastSession.activeSessions())).toEqual([
       {
-        authenticatableId: '8',
+        userId: '8',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         id: expect.any(String),
@@ -145,7 +145,7 @@ describe('session-middleware', (): void => {
         deviceId: null
       },
       {
-        authenticatableId: '8',
+        userId: '8',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         id: expect.any(String),
@@ -158,7 +158,7 @@ describe('session-middleware', (): void => {
 
     expect(Object.values(await Session.activeSessions(8))).toEqual([
       {
-        authenticatableId: '8',
+        userId: '8',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         id: expect.any(String),
@@ -168,7 +168,7 @@ describe('session-middleware', (): void => {
         deviceId: null
       },
       {
-        authenticatableId: '8',
+        userId: '8',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         id: expect.any(String),
@@ -184,7 +184,7 @@ describe('session-middleware', (): void => {
     expect(Object.values(await lastSession.activeSessions())).toEqual([
       {
         id: expect.any(String),
-        authenticatableId: '2',
+        userId: '2',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         lastAccessed: expect.any(Number),
@@ -197,7 +197,7 @@ describe('session-middleware', (): void => {
     expect(Object.values(await Session.activeSessions(2))).toEqual([
       {
         id: expect.any(String),
-        authenticatableId: '2',
+        userId: '2',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         lastAccessed: expect.any(Number),
@@ -212,7 +212,7 @@ describe('session-middleware', (): void => {
     expect(Object.values(await lastSession.activeSessions())).toEqual([
       {
         id: expect.any(String),
-        authenticatableId: '2',
+        userId: '2',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         lastAccessed: expect.any(Number),
@@ -225,7 +225,7 @@ describe('session-middleware', (): void => {
     expect(Object.values(await Session.activeSessions(2))).toEqual([
       {
         id: expect.any(String),
-        authenticatableId: '2',
+        userId: '2',
         firstAccessed: expect.any(Number),
         firstIp: expect.any(String),
         lastAccessed: expect.any(Number),

@@ -67,7 +67,7 @@ Authenticating request is very simple you can even add your own logic like setti
 ```js
 export async function authenticateRequest(request, response, next) {
   if (request.session.authenticated) {
-    request.currentUser = await User.find(request.session.authenticatableID)
+    request.currentUser = await User.find(request.session.userId)
 
     next()
   } else {
@@ -86,7 +86,7 @@ When the middleware is in use a `Session` object will be available in the reques
 
 ```js
 app.get('/', async (request, response) => {
-  const currentUser = await User.find(request.session.authenticatableID)
+  const currentUser = await User.find(request.session.userID)
 
   response.end()
 })
@@ -102,7 +102,7 @@ True whe a request was authenticated with a token.
 
 A unique id for the session aside from the token.
 
-#### authenticatableId `String`
+#### userId `String`
 
 The same id used to create the session at log in.
 
@@ -132,9 +132,9 @@ User agent in which the session was created at log in.
 
 ### Instance methods
 
-#### **`logIn(authenticatableID: String)`** `Async`
+#### **`logIn(userID: String)`** `Async`
 
-Creates a new session using the authenticatable id and sets the cookie `session` as well as the `Authorization` response header to return to the user when ending the response.
+Creates a new session using the user id and sets the cookie `session` as well as the `Authorization` response header to return to the user when ending the response.
 
 #### **`logOut(token? string)`** `Async`
 
@@ -142,16 +142,16 @@ Disposes the current session from the registry so the token is no longer valid, 
 
 #### **`activeSessions()`** `Async`
 
-Returns all the active sessions for the current session authenticatable.
+Returns all the active sessions for the current session user.
 
 ### Static methods
 
-#### **`activeSessions(authenticatableId: String, [options: Object])`** `Async`
+#### **`activeSessions(userId: String, [options: Object])`** `Async`
 
-Returns all the active sessions for the authenticatable id.
+Returns all the active sessions for the user id.
 
-- **`authenticatableId`** `String`
-  The id of the authenticatable to get the active sessions from.
+- **`userId`** `String`
+  The id of the user to get the active sessions from.
 - **`options`** `Object`
   Same options as [Token Registry](https://github.com/universal-packages/universal-token-registry#options)
 

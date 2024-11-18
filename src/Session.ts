@@ -10,7 +10,7 @@ export const MEMORY_ENGINE = new MemoryEngine()
 export default class Session {
   public id: string = null
   public authenticated: boolean = false
-  public authenticatableId: string = null
+  public userId: string = null
   public token: string = null
   public firstAccessed: Date = null
   public lastAccessed: Date = null
@@ -33,11 +33,11 @@ export default class Session {
     this.response = response
   }
 
-  public static async activeSessions(authenticatableId: string | number | bigint, options?: ExpressSessionOptions): Promise<Record<string, SessionRegistrySubject>> {
+  public static async activeSessions(userId: string | number | bigint, options?: ExpressSessionOptions): Promise<Record<string, SessionRegistrySubject>> {
     const finalOptions = { engine: MEMORY_ENGINE, cookieName: 'session', ...options }
     const engine = finalOptions.engine === 'memory' ? MEMORY_ENGINE : finalOptions.engine
     const registry = new Registry({ engine: engine, engineOptions: finalOptions.engineOptions, seed: finalOptions.registryId || finalOptions.seed })
-    const category = `auth-${authenticatableId}`
+    const category = `auth-${userId}`
 
     return await registry.retrieveAll(category)
   }
@@ -54,7 +54,7 @@ export default class Session {
         this.id = subject.id
         this.token = token
         this.authenticated = true
-        this.authenticatableId = subject.authenticatableId
+        this.userId = subject.userId
         this.firstAccessed = new Date(subject.firstAccessed)
         this.lastAccessed = new Date()
         this.firstIp = subject.firstIp
@@ -63,7 +63,7 @@ export default class Session {
         this.deviceId = subject.deviceId
 
         if (this.options.trackSessionAccess) {
-          const category = `auth-${subject.authenticatableId}`
+          const category = `auth-${subject.userId}`
 
           await this.registry.register(
             token,
@@ -79,22 +79,22 @@ export default class Session {
     }
   }
 
-  public async logIn(authenticatableId: string | number | bigint): Promise<void> {
-    this.id = generateToken({ seed: String(authenticatableId) })
+  public async logIn(userId: string | number | bigint): Promise<void> {
+    this.id = generateToken({ seed: String(userId) })
     this.authenticated = true
-    this.authenticatableId = String(authenticatableId)
+    this.userId = String(userId)
     this.firstAccessed = new Date()
     this.lastAccessed = new Date()
     this.firstIp = this.request.ip
     this.lastIp = this.request.ip
     this.userAgent = this.request.headers['user-agent']
 
-    const category = `auth-${authenticatableId}`
+    const category = `auth-${userId}`
 
     this.token = await this.registry.register(
       {
         id: this.id,
-        authenticatableId: this.authenticatableId,
+        userId: this.userId,
         firstAccessed: this.firstAccessed.getTime(),
         lastAccessed: this.lastAccessed.getTime(),
         firstIp: this.firstIp,
@@ -119,7 +119,7 @@ export default class Session {
         this.id = null
         this.authenticated = false
         this.token = null
-        this.authenticatableId = null
+        this.userId = null
         this.firstAccessed = null
         this.lastAccessed = null
         this.firstIp = null
@@ -131,7 +131,7 @@ export default class Session {
 
   public async activeSessions(): Promise<Record<string, SessionRegistrySubject>> {
     if (this.authenticated) {
-      const category = `auth-${this.authenticatableId}`
+      const category = `auth-${this.userId}`
 
       return await this.registry.retrieveAll(category)
     }
@@ -141,13 +141,13 @@ export default class Session {
     if (this.authenticated) {
       this.deviceId = deviceId
 
-      const category = `auth-${this.authenticatableId}`
+      const category = `auth-${this.userId}`
 
       await this.registry.register(
         this.token,
         {
           id: this.id,
-          authenticatableId: this.authenticatableId,
+          userId: this.userId,
           firstAccessed: this.firstAccessed.getTime(),
           lastAccessed: this.lastAccessed.getTime(),
           firstIp: this.firstIp,
