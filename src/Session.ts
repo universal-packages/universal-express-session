@@ -10,7 +10,7 @@ export const MEMORY_ENGINE = new MemoryEngine()
 export default class Session {
   public id: string = null
   public authenticated: boolean = false
-  public userId: string = null
+  public userId: number | string | bigint = null
   public token: string = null
   public firstAccessed: Date = null
   public lastAccessed: Date = null

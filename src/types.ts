@@ -8,7 +8,7 @@ export interface ExpressSessionOptions extends RegistryOptions {
 
 export interface SessionRegistrySubject {
   id: string
-  userId: string
+  userId: number | string | bigint
   firstAccessed: number
   lastAccessed: number
   firstIp: string
