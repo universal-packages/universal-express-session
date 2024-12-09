@@ -106,7 +106,7 @@ export default class Session {
     )
 
     this.response.header('authorization', `bearer ${this.token}`)
-    this.response.cookie(this.options.cookieName, this.token)
+    this.response.cookie(this.options.cookieName, this.token, { httpOnly: this.options.httpOnlyCookie, secure: this.options.secureCookie, sameSite: this.options.sameSiteCookie })
   }
 
   public async logOut(token?: string): Promise<void> {

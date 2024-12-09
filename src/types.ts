@@ -4,6 +4,9 @@ export interface ExpressSessionOptions extends RegistryOptions {
   cookieName?: string
   registryId?: string
   trackSessionAccess?: boolean
+  httpOnlyCookie?: boolean
+  secureCookie?: boolean
+  sameSiteCookie?: boolean | 'lax' | 'strict' | 'none'
 }
 
 export interface SessionRegistrySubject {
